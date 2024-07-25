@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" th:replace="~{fragment/dashboard-layout :: nav}">
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col align-self-start">
+                    <h2>Users</h2>
+                </div>
+                <div class="col align-self-end text-end">
+                    <a href="{{route('addDevice')}}" class="btn btn-primary">Add Data</a>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <div class="card-body">
+                        <div class="table-responsive m-t-10">
+                            <table id="table" class="table table-striped table-bordered">
+                                <thead>
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Address</th>
+                                    <th>Phone</th>
+                                    <th>Emergency Contact</th>
+                                    <th>Picture</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="row, no: ${users}">
+                                    <td th:text="${no.index+1}"/>
+                                    <td th:text="${row.full_name}"/>
+                                    <td th:text="${row.email}"/>
+                                    <td th:text="${row.username}"/>
+                                    <td th:text="${row.address}"/>
+                                    <td th:text="${row.phone_number}"/>
+                                    <td th:text="${row.emergency_contact}"/>
+                                    <td th:text="${row.picture}"/>
+                                    <td align="center">
+                                        <button class="btn btn-success">Edit</button>
+                                        <button th:onclick="del(${row.id_user})" class="btn btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+
+    $(document).ready(function () {
+        $('#table').DataTable({
+
+        });
+    });
+
+    function del(id) {
+        let confirm = window.confirm('Are you sure want to delete this data?');
+        if (!confirm) {
+            return false;
+        }
+        window.location.href = "{{url('devices/delete')}}/" + id;
+    }
+</script>
+</body>
+</html>

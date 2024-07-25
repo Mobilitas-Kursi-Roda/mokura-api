@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="http://localhost:8000">
+                Mokura CMS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Left Side Of Navbar -->
+                <ul class="navbar-nav me-auto"></ul>
+
+                <!-- Right Side Of Navbar -->
+                <ul class="navbar-nav ms-auto">
+                    <!-- Authentication Links -->
+                    <li class="nav-item">
+<!--                        <a class="nav-link" href="http://localhost:8000/login">Login</a>-->
+                    </li>
+                    <!--
+                            <li class="nav-item">
+    <a class="nav-link" href="http://localhost:8000/register">Register</a>
+</li>
+-->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">Login</div>
+
+                        <div class="card-body">
+                            <form method="POST" role="form" th:action="@{/auth/login}">
+                                <div class="row mb-3">
+                                    <label for="username" class="col-md-4 col-form-label text-md-end">Username</label>
+
+                                    <div class="col-md-6">
+                                        <input id="username" type="text" class="form-control" th:classappend="${param.error} ? is-invalid : ''" name="username" required autocomplete="username" autofocus>
+                                        <span th:if="${param.error}" class="invalid-feedback" role="alert">
+                                            <strong>Invalid username or passsword</strong>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="password" class="col-md-4 col-form-label text-md-end">Password</label>
+
+                                    <div class="col-md-6">
+                                        <input id="password" type="password" class="form-control " name="password" required autocomplete="current-password">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-8 offset-md-4">
+                                        <button type="submit" value="Log in" class="btn btn-primary">
+                                            Login
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</html>

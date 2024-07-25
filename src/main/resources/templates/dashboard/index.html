@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" th:replace="~{fragment/dashboard-layout :: nav}">
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">Home</div>
+
+                        <div class="card-body">
+
+                            Welcome! You are logged in!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

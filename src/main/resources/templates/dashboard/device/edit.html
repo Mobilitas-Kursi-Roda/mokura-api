@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" th:replace="~{fragment/dashboard-layout :: nav}">
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">Edit Device</div>
+
+                        <div class="card-body">
+                            <form method="POST" th:action="@{/dashboard/device/update}">
+                                <input type="hidden" th:field="${device.id_device}">
+                                <div class="row mb-3">
+                                    <label for="device_name" class="col-md-4 col-form-label text-md-end">Device Name</label>
+
+                                    <div class="col-md-6">
+                                        <input id="device_name" type="text" class="form-control" name="device_name" th:field="${device.device_name}" required autocomplete="device_name" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="bluetooth_id" class="col-md-4 col-form-label text-md-end">Bluetooth ID</label>
+
+                                    <div class="col-md-6">
+                                        <input id="bluetooth_id" type="text" class="form-control" name="bluetooth_id" th:field="${device.bluetooth_id}" required autocomplete="bluetooth_id" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+
+    $(document).ready(function () {
+        $('#table').DataTable({
+
+        });
+    });
+
+    function del(id) {
+        let confirm = window.confirm('Are you sure want to delete this data?');
+        if (!confirm) {
+            return false;
+        }
+        window.location.href = "{{url('devices/delete')}}/" + id;
+    }
+</script>
+</body>
+</html>

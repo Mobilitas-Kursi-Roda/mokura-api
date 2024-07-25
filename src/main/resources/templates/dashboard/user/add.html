@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" th:replace="~{fragment/dashboard-layout :: nav}">
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">Add User</div>
+
+                        <div class="card-body">
+                            <form method="POST" action="{{ route('insertDevice') }}">
+                                @csrf
+
+                                <div class="row mb-3">
+                                    <label for="device_name" class="col-md-4 col-form-label text-md-end">{{ __('Device Name') }}</label>
+
+                                    <div class="col-md-6">
+                                        <input id="device_name" type="text" class="form-control @error('device_name') is-invalid @enderror" name="device_name" value="{{ old('device_name') }}" required autocomplete="device_name" autofocus>
+
+                                        @error('device_name')
+                                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="hardware_serial" class="col-md-4 col-form-label text-md-end">{{ __('Bluetooth ID') }}</label>
+
+                                    <div class="col-md-6">
+                                        <input id="hardware_serial" type="text" class="form-control @error('hardware_serial') is-invalid @enderror" name="hardware_serial" value="{{ old('hardware_serial') }}" required autocomplete="hardware_serial" autofocus>
+
+                                        @error('hardware_serial')
+                                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            {{ __('Submit') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+
+    $(document).ready(function () {
+        $('#table').DataTable({
+
+        });
+    });
+
+    function del(id) {
+        let confirm = window.confirm('Are you sure want to delete this data?');
+        if (!confirm) {
+            return false;
+        }
+        window.location.href = "{{url('devices/delete')}}/" + id;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/dashboard-layout :: header}">
+</head>
+<body>
+<style>
+    img{
+        max-height:400px;
+        max-width:300px;
+        height:auto;
+        width:auto;
+    }
+</style>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" th:replace="~{fragment/dashboard-layout :: nav}">
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">Add Data</div>
+
+                        <div class="card-body">
+                            <form method="POST" id="form" th:action="@{/dashboard/support-building/insert}" enctype="multipart/form-data">
+                                <div class="row mb-3">
+                                    <label for="name" class="col-md-4 col-form-label text-md-end">Building Name</label>
+
+                                    <div class="col-md-6">
+                                        <input id="name" type="text" class="form-control" name="name" th:field="${supportBuilding.name}" required autocomplete="name" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="address" class="col-md-4 col-form-label text-md-end">Address</label>
+
+                                    <div class="col-md-6">
+                                        <input id="address" type="text" class="form-control" name="address" th:field="${supportBuilding.address}" required autocomplete="address" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="latitude" class="col-md-4 col-form-label text-md-end">Latitude</label>
+
+                                    <div class="col-md-6">
+                                        <input id="latitude" type="text" class="form-control" name="latitude" th:field="${supportBuilding.latitude}" required autocomplete="address" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="longitude" class="col-md-4 col-form-label text-md-end">Longitude</label>
+
+                                    <div class="col-md-6">
+                                        <input id="longitude" type="text" class="form-control" name="longitude" th:field="${supportBuilding.longitude}" required autocomplete="address" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="url" class="col-md-4 col-form-label text-md-end">URL Page</label>
+
+                                    <div class="col-md-6">
+                                        <input id="url" type="text" class="form-control" name="url" th:field="${supportBuilding.url}" required autocomplete="address" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label for="url" class="col-md-4 col-form-label text-md-end">Thumbnail</label>
+                                    <div class="col-md-6">
+                                        <div class="controls mb-2">
+                                            <input type="file" name="file" id="imageThumbnail" class="form-control" accept=".jpg, .png" required>
+                                        </div>
+                                        <div class="controls view-image">
+                                            <img id="thumbnailPreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#form').on('submit', function(e) {
+            const fileInput = $('#imageThumbnail')[0];
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (file.size > 1024 * 1024) { // 1 MB = 1024 * 1024 bytes
+                    alert('The file size must be less than 1 MB.');
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+
+    $('#imageThumbnail').change(function() {
+        const files = event.target.files;
+        if (files && files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $('#thumbnailPreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(files[0]);
+        }
+    })
+
+    function del(id) {
+        let confirm = window.confirm('Are you sure want to delete this data?');
+        if (!confirm) {
+            return false;
+        }
+        window.location.href = "{{url('devices/delete')}}/" + id;
+    }
+</script>
+</body>
+</html>
