@@ -19,3 +19,4 @@ buildNumber.properties
 
 src/main/resources/application.yaml
 src/main/resources/serviceAccount.json
+src/main/resources/application.properties
