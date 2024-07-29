@@ -13,7 +13,7 @@ import java.util.Map;
 public interface TopicService {
     ResponseEntity<BaseResponseDto<List<Topic>>> getAllTopics();
     ResponseEntity<BaseResponseDto<Map<String, Object>>> getTopicById(Long id);
-    ResponseEntity<BaseResponseDto<Topic>> addTopic(String title, String text, MultipartFile file);
-    ResponseEntity<BaseResponseDto<Reply>> reply(Long id, String text, MultipartFile image);
+    ResponseEntity<BaseResponseDto<Topic>> addTopic(String title, String text, String image);
+    ResponseEntity<BaseResponseDto<Reply>> reply(Long id, String text, String pathImage);
     void deleteTopic(Long id);
 }

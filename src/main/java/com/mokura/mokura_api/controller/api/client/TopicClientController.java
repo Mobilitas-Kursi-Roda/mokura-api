@@ -5,6 +5,7 @@ import com.mokura.mokura_api.dto.BaseResponseDto;
 import com.mokura.mokura_api.entity.Reply;
 import com.mokura.mokura_api.entity.Topic;
 import com.mokura.mokura_api.service.TopicService;
+import com.mokura.mokura_api.service.UploadService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +18,11 @@ import java.util.Map;
 public class TopicClientController {
 
     private final TopicService topicService;
+    private final UploadService uploadService;
 
-    public TopicClientController(TopicService topicService) {
+    public TopicClientController(TopicService topicService, UploadService uploadService) {
         this.topicService = topicService;
+        this.uploadService = uploadService;
     }
 
     @GetMapping
@@ -33,7 +36,11 @@ public class TopicClientController {
             @RequestParam("text") String text,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
-        return topicService.addTopic(title, text, file);
+        String pathImage = null;
+        if (file != null && !file.isEmpty()) {
+            pathImage = uploadService.upload(file);
+        }
+        return topicService.addTopic(title, text, pathImage);
     }
 
     @GetMapping("/{id}")
@@ -47,7 +54,11 @@ public class TopicClientController {
             @RequestParam("text") String text,
             @RequestParam(value = "image", required = false) MultipartFile file
     ) {
-        return topicService.reply(id, text, file);
+        String pathImage = null;
+        if (file != null && !file.isEmpty()) {
+            pathImage = uploadService.upload(file);
+        }
+        return topicService.reply(id, text, pathImage);
     }
 
 }

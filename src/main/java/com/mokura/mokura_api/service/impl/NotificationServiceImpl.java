@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 public class NotificationServiceImpl implements NotificationService {
 
     @Override
-    public Boolean sendNotificationToUser(User user, String title, String body) {
+    public Boolean sendNotificationToUser(User user, String title, String body, String payload) {
         Notification notification = Notification.builder()
                 .setTitle(title)
                 .setBody(body)
@@ -26,6 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
         Message message = Message.builder()
                 .setToken(user.getTokenFcm())
                 .setNotification(notification)
+                .putData("payload", payload)
                 .build();
 
         System.out.println(user.getTokenFcm());

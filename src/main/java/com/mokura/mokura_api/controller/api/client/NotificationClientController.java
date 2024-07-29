@@ -37,7 +37,7 @@ public class NotificationClientController {
     public void sendMessage(@RequestParam("title") String title, @RequestParam("message") String message, @RequestParam("user_id") Long userId) {
         Optional<User> user = userRepository.findById(userId);
         System.out.println(userId);
-        user.ifPresent(value -> notificationService.sendNotificationToUser(value, title, message));
+        user.ifPresent(value -> notificationService.sendNotificationToUser(value, title, message, "1"));
         if (user.isEmpty()) log.error("send notification: user not found");
     }
 }

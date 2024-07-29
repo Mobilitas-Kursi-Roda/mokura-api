@@ -1,6 +1,5 @@
 package com.mokura.mokura_api.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mokura.mokura_api.dto.BaseResponseDto;
 import com.mokura.mokura_api.entity.Reply;
 import com.mokura.mokura_api.entity.Topic;
@@ -9,42 +8,35 @@ import com.mokura.mokura_api.exception.CustomBadRequestException;
 import com.mokura.mokura_api.repository.ReplyRepository;
 import com.mokura.mokura_api.repository.TopicRepository;
 import com.mokura.mokura_api.repository.UserRepository;
+import com.mokura.mokura_api.service.NotificationService;
 import com.mokura.mokura_api.service.TopicService;
 import com.mokura.mokura_api.util.JWTUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class TopicServiceImpl implements TopicService {
 
-    private static final Logger log = LoggerFactory.getLogger(TopicServiceImpl.class);
     final TopicRepository topicRepository;
     final UserRepository userRepository;
     final ReplyRepository replyRepository;
+    final NotificationService notificationService;
 
     final JWTUtil jwtUtil;
 
     @Autowired
     HttpServletRequest request;
 
-    public TopicServiceImpl(TopicRepository topicRepository, UserRepository userRepository, ReplyRepository replyRepository, JWTUtil jwtUtil) {
+    public TopicServiceImpl(TopicRepository topicRepository, UserRepository userRepository, ReplyRepository replyRepository, NotificationService notificationService, JWTUtil jwtUtil) {
         this.topicRepository = topicRepository;
         this.userRepository = userRepository;
         this.replyRepository = replyRepository;
+        this.notificationService = notificationService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -65,7 +57,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public ResponseEntity<BaseResponseDto<Map<String, Object>>> getTopicById(Long id) {
         Optional<Topic> topic = topicRepository.findById(id);
-        if (!topic.isPresent()) {
+        if (topic.isEmpty()) {
             throw new CustomBadRequestException("Topic not found");
         }
         String baseUrl = String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
@@ -88,7 +80,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public ResponseEntity<BaseResponseDto<Topic>> addTopic(String title, String text, MultipartFile file) {
+    public ResponseEntity<BaseResponseDto<Topic>> addTopic(String title, String text, String image) {
 
         String authorization = request.getHeader("Authorization");
         String jwtToken = authorization.substring("Bearer ".length());
@@ -101,37 +93,8 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = new Topic();
         topic.setTitle(title);
         topic.setText(text);
-        topic.setUser(user.get());
-
-//        upload image
-        if (file.isEmpty() || file == null) {
-            log.info("File is empty");
-        }else{
-            try {
-                String uploadFolder = "uploads";
-                // Ensure the upload folder exists
-                Path uploadPath = Paths.get(uploadFolder);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                // Generate a unique filename using timestamp
-                String originalFilename = file.getOriginalFilename();
-                String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-                String uniqueFilename = timestamp + "-" + originalFilename;
-
-
-                // Save the file
-                byte[] bytes = file.getBytes();
-                Path path = uploadPath.resolve(uniqueFilename);
-                Files.write(path, bytes);
-
-                topic.setImage(String.valueOf(path));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        topic.setUser(user.orElse(null));
+        topic.setImage(image);
 
         topicRepository.save(topic);
 
@@ -139,14 +102,10 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public ResponseEntity<BaseResponseDto<Reply>> reply(Long id, String text, MultipartFile image) {
+    public ResponseEntity<BaseResponseDto<Reply>> reply(Long id, String text, String pathImage) {
         Optional<Topic> topic = topicRepository.findById(id);
         if (topic.isEmpty()) {
             throw new CustomBadRequestException("Topic not found");
-        }
-        String pathImage = null;
-        if (!image.isEmpty() || image != null) {
-            pathImage = uploadFile(image);
         }
 
         String authorization = request.getHeader("Authorization");
@@ -161,9 +120,13 @@ public class TopicServiceImpl implements TopicService {
         reply.setText(text);
         reply.setImage(pathImage);
         reply.setTopic(topic.get());
-        reply.setUser(user.get());
+        reply.setUser(user.orElse(null));
 
         replyRepository.save(reply);
+
+        User user1 = topic.get().getUser();
+
+        Boolean notif = notificationService.sendNotificationToUser(user1, reply.getText(), "Reply Topic",topic.get().getId_topic().toString());
 
         return ResponseEntity.ok(new BaseResponseDto<>("success", reply));
     }
@@ -171,33 +134,5 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void deleteTopic(Long id) {
 
-    }
-
-    public String uploadFile(MultipartFile file) {
-        try {
-            String uploadFolder = "uploads";
-            // Ensure the upload folder exists
-            Path uploadPath = Paths.get(uploadFolder);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // Generate a unique filename using timestamp
-            String originalFilename = file.getOriginalFilename();
-            String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            String uniqueFilename = timestamp + "-" + originalFilename;
-
-
-            // Save the file
-            byte[] bytes = file.getBytes();
-            Path path = uploadPath.resolve(uniqueFilename);
-            Files.write(path, bytes);
-
-            return String.valueOf(path);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
