@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().ignoringRequestMatchers("/api/**");
         http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers("/assets/**", "/login","/api/**", "/uploads/**")
+                requests.requestMatchers("/assets/**", "/login","/api/**", "/uploads/**", "/client")
                         .permitAll()
                         .anyRequest()
                         .authenticated()

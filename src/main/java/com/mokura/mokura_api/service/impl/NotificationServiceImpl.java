@@ -10,8 +10,6 @@ import com.mokura.mokura_api.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ExecutionException;
-
 @Service
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {

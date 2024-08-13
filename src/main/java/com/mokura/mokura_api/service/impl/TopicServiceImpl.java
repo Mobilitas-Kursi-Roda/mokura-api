@@ -124,10 +124,12 @@ public class TopicServiceImpl implements TopicService {
 
         replyRepository.save(reply);
 
-        User user1 = topic.get().getUser();
-
-        Boolean notif = notificationService.sendNotificationToUser(user1, reply.getText(), "Reply Topic",topic.get().getId_topic().toString());
-
+        List<Reply> replys = replyRepository.getRepliesByTopic(topic.get());
+        replys.forEach(r -> {
+            User u = r.getUser();
+            notificationService.sendNotificationToUser(u, u.getUsername()+" reply "+topic.get().getTitle(), reply.getText(), String.valueOf(topic.get().getId_topic()));
+        });
+        notificationService.sendNotificationToUser(topic.get().getUser(), user.get().getUsername()+" reply "+topic.get().getTitle(), reply.getText(), String.valueOf(topic.get().getId_topic()));
         return ResponseEntity.ok(new BaseResponseDto<>("success", reply));
     }
 
