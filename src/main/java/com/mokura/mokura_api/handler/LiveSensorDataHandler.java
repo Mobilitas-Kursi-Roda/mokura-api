@@ -38,11 +38,13 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         if (role.startsWith("admin")) {
             adminSessions.add(session);
             log.info("admin session added");
+            sendMessageToAdmin();
         }else{
             String device_id = session.getUri().getQuery().split("=")[2];
             deviceSessions.put(device_id, session);
             log.info("New device session id: {}", device_id);
         }
+        System.out.println(adminSessions);
     }
 
     @Override
@@ -60,12 +62,11 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         deviceRecord.setLatitude(sensorDto.getLatitude());
         deviceRecord.setLongitude(sensorDto.getLongitude());
 
-        sendData.put(deviceRecord.getDeviceId().toString(), deviceRecord);
+        sendData.put(deviceRecord.getDeviceId().toString(), sensorDto);
 
         deviceRecordService.saveDeviceRecord(deviceRecord);
 
         sendMessageToAdmin();
-        System.out.println(sendData);
     }
 
     @Override
@@ -97,7 +98,18 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
 
     public void sendMessageToAdmin() throws Exception {
         for (WebSocketSession session : adminSessions) {
-            session.sendMessage(new TextMessage(mapper.writeValueAsString(sendData)));
+            System.out.println(session);
+            if(session == null) continue;
+            if (session.isOpen()) {
+                try {
+                    session.sendMessage(new TextMessage(mapper.writeValueAsString(sendData)));
+                } catch (Exception e) {
+                    log.error("Error sending message to admin session", e);
+                }
+            }
+            else {
+                log.info("admin session id: {} closed", session.getUri().getQuery().split("=")[2]);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ import java.util.Date;
 public class ReqSendSensorDeviceWsDto {
     private Long user_id;
     private Long device_id;
+    private String device_name;
     private double speed;
     private double rpm;
     private double battery;

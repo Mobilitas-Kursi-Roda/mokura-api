@@ -21,7 +21,7 @@ public class PathMatchInterceptor implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(apiJWTInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/login", "/api/client/auth/**");
+                .excludePathPatterns("/api/login", "/api/client/auth/**", "/api/admin/login");
         registry.addInterceptor(logInterceptor);
         WebMvcConfigurer.super.addInterceptors(registry);
     }
