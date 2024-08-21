@@ -12,6 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         DeviceRecord deviceRecord = new DeviceRecord();
         deviceRecord.setUserId(sensorDto.getUser_id());
         deviceRecord.setDeviceId(sensorDto.getDevice_id());
-        deviceRecord.setCreated_at(sensorDto.getCreated_at());
+        deviceRecord.setCreated_at(LocalDateTime.parse(sensorDto.getCreated_at()));
         deviceRecord.setBattery(sensorDto.getBattery());
         deviceRecord.setRpm(sensorDto.getRpm());
         deviceRecord.setSpeed(sensorDto.getSpeed());
