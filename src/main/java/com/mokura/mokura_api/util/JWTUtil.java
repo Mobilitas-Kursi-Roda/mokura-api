@@ -32,7 +32,7 @@ public class JWTUtil {
                 .setSubject(user.getUsername())
                 .addClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTime))
+                .setExpiration(new Date(System.currentTimeMillis() + (jwtExpirationTime * 24)))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
