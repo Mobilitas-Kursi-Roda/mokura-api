@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -55,6 +56,12 @@ public class HistoryClientController {
         history.setEnd_date(LocalDateTime.parse(request.get("end_date").toString()));
 
         historyRepository.save(history);
+
+        device.get().setLatitude(request.get("latitude").toString());
+        device.get().setLongitude(request.get("longitude").toString());
+        device.get().setStatus("Inactive");
+        device.get().setLast_update(Instant.now());
+        deviceRepository.save(device.get());
 
         return ResponseEntity.ok(new BaseResponseDto<>("success",history));
     }
