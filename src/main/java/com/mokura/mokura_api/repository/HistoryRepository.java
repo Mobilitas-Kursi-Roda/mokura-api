@@ -11,11 +11,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
+
+    @Query("SELECT h FROM History h " +
+            "WHERE h.device = :device " +
+            "ORDER BY h.start_date DESC")
     List<History> getHistoriesByDevice(Device device);
 
-    @Query("SELECT h FROM History h WHERE h.device = :device AND h.start_date >= :startDate AND h.end_date <= :endDate")
+    @Query("SELECT h FROM History h " +
+            "WHERE h.device = :device AND h.start_date >= :startDate AND h.end_date <= :endDate " +
+            "ORDER BY h.start_date DESC")
     List<History> findHistoriesBetween(@Param("device") Device device,@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT h FROM History h WHERE h.device = :device AND h.start_date >= :startDate")
+    @Query("SELECT h FROM History h " +
+            "WHERE h.device = :device AND h.start_date >= :startDate " +
+            "ORDER BY h.start_date DESC")
     List<History> findHistoriesStart(@Param("device") Device device, @Param("startDate") LocalDateTime startDate);
 }
