@@ -33,6 +33,14 @@ public class NotificationClientController {
         });
     }
 
+    @PostMapping("/send-token-admin")
+    public void sendTokenAdmin(@RequestParam("token") String token) {
+        userRepository.findByEmail("admin@mail.com").ifPresent(user->{
+            user.setTokenFcm(token);
+            userRepository.save(user);
+        });
+    }
+
     @PostMapping("/send-message")
     public void sendMessage(@RequestParam("title") String title, @RequestParam("message") String message, @RequestParam("user_id") Long userId) {
         Optional<User> user = userRepository.findById(userId);
