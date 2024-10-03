@@ -1,13 +1,11 @@
 package com.mokura.mokura_api.controller.api.client;
 
 import com.mokura.mokura_api.dto.BaseResponseDto;
+import com.mokura.mokura_api.dto.ResChargingStationDto;
 import com.mokura.mokura_api.entity.ChargingStation;
 import com.mokura.mokura_api.service.ChargingStationClientService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,8 +20,11 @@ public class ChargingStationClientController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponseDto<List<ChargingStation>>> getChargingStationss() {
-        return chargingStationClientService.getAll();
+    public ResponseEntity<BaseResponseDto<List<ResChargingStationDto>>> getChargingStationss(
+            @RequestParam double latitude,
+            @RequestParam double longitude
+    ) {
+        return chargingStationClientService.getAll(latitude, longitude);
     }
 
     @GetMapping("/{id}")
