@@ -15,5 +15,6 @@ public class ResLoginClient {
     private String fullname;
     private String email;
     private String token;
+    private String emergency_contact;
     private Date expire;
 }

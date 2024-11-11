@@ -13,4 +13,5 @@ public class ReqRegisterDto {
     private String password;
     private String full_name;
     private String phone;
+    private String emergency_contact;
 }

@@ -26,5 +26,7 @@ public class User {
     private String emergency_contact;
     private String picture;
     private String tokenFcm;
+    private String latitude;
+    private String longitude;
 
 }

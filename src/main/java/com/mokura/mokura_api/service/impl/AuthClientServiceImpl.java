@@ -68,6 +68,7 @@ public class AuthClientServiceImpl implements AuthClientService {
         resLoginClient.setFullname(user.getFull_name());
         resLoginClient.setExpire(expiresAt);
         resLoginClient.setUser_id(user.getId_user());
+        resLoginClient.setEmergency_contact(user.getEmergency_contact());
         System.out.println("sampai sini");
         return ResponseEntity.ok().body(
                 new BaseResponseDto<>("Login Success",resLoginClient)
@@ -92,6 +93,9 @@ public class AuthClientServiceImpl implements AuthClientService {
         user.setUsername(reqRegisterDto.getUsername());
         user.setFull_name(reqRegisterDto.getFull_name());
         user.setEmail(reqRegisterDto.getEmail());
+
+        user.setEmergency_contact(reqRegisterDto.getEmergency_contact().replaceFirst("0", "62"));
+        user.setPhone_number(reqRegisterDto.getPhone().replaceFirst("0", "62"));
         user.setPassword(passwordEncoder.encode(reqRegisterDto.getPassword()));
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(
