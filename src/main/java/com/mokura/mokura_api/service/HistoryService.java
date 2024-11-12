@@ -15,4 +15,5 @@ public interface HistoryService {
     ResponseEntity<BaseResponseDto<List<History>>> getHistoryByDeviceDateBetween(Long idDevice, LocalDateTime startDate, LocalDateTime endDate);
     ResponseEntity<BaseResponseDto<List<History>>> getHistoryByDeviceDateAfter(Long idDevice, LocalDateTime startDate);
     ResponseEntity<BaseResponseDto<Map<Object, Object>>> getDetailHistoryById(Long id);
+    ResponseEntity<BaseResponseDto<List<History>>> getByUserId(Long userId);
 }

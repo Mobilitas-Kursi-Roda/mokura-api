@@ -26,4 +26,9 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             "WHERE h.device = :device AND h.start_date >= :startDate " +
             "ORDER BY h.start_date DESC")
     List<History> findHistoriesStart(@Param("device") Device device, @Param("startDate") LocalDateTime startDate);
+
+    @Query("SELECT h FROM History  h " +
+            "WHERE h.user.id_user = :userId " +
+            "ORDER BY h.start_date DESC")
+    List<History> findByIdUser(@Param("userId") Long userId);
 }

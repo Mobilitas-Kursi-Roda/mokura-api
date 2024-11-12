@@ -26,7 +26,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .putData("payload", payload)
                 .build();
 
-        System.out.println(user.getTokenFcm());
         try {
             String response = FirebaseMessaging.getInstance().send(message);
             log.info("Successfully sent message: {}", response);

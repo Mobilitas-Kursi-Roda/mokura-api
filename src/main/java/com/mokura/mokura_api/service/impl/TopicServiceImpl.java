@@ -125,10 +125,19 @@ public class TopicServiceImpl implements TopicService {
         replyRepository.save(reply);
 
         List<Reply> replys = replyRepository.getRepliesByTopic(topic.get());
-        replys.forEach(r -> {
-            User u = r.getUser();
-            notificationService.sendNotificationToUser(u, u.getUsername()+" reply "+topic.get().getTitle(), reply.getText(), String.valueOf(topic.get().getId_topic()));
+        Set<User> users = new HashSet<>();
+        replys.forEach(r -> users.add(r.getUser()));
+
+        // remove the replier
+        users.remove(user.get());
+
+        // notif the participant
+        users.forEach(u-> {
+            System.out.println(u);
+            notificationService.sendNotificationToUser(u, u.getUsername() + " reply " + topic.get().getTitle(), reply.getText(), String.valueOf(topic.get().getId_topic()));
         });
+
+        // notif the topic author
         notificationService.sendNotificationToUser(topic.get().getUser(), user.get().getUsername()+" reply "+topic.get().getTitle(), reply.getText(), String.valueOf(topic.get().getId_topic()));
         return ResponseEntity.ok(new BaseResponseDto<>("success", reply));
     }

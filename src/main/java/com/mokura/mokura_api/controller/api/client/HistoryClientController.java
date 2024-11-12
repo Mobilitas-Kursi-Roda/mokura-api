@@ -8,6 +8,7 @@ import com.mokura.mokura_api.exception.CustomBadRequestException;
 import com.mokura.mokura_api.repository.DeviceRepository;
 import com.mokura.mokura_api.repository.HistoryRepository;
 import com.mokura.mokura_api.repository.UserRepository;
+import com.mokura.mokura_api.service.HistoryService;
 import com.mokura.mokura_api.service.impl.HistoryServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,10 +32,18 @@ public class HistoryClientController {
     private final DeviceRepository deviceRepository;
     private final HistoryRepository historyRepository;
 
-    public HistoryClientController(UserRepository userRepository, DeviceRepository deviceRepository, HistoryRepository historyRepository, HistoryServiceImpl historyServiceImpl, HistoryServiceImpl historyService) {
+    private final HistoryService historyService;
+
+    public HistoryClientController(
+            UserRepository userRepository,
+            DeviceRepository deviceRepository,
+            HistoryRepository historyRepository,
+            HistoryService historyService
+    ) {
         this.userRepository = userRepository;
         this.deviceRepository = deviceRepository;
         this.historyRepository = historyRepository;
+        this.historyService = historyService;
     }
 
     @PostMapping("/send-session")
@@ -64,5 +74,10 @@ public class HistoryClientController {
         deviceRepository.save(device.get());
 
         return ResponseEntity.ok(new BaseResponseDto<>("success",history));
+    }
+
+    @GetMapping()
+    public ResponseEntity<BaseResponseDto<List<History>>> getHistory(@RequestParam("id_user") Long idUser){
+        return historyService.getByUserId(idUser);
     }
 }

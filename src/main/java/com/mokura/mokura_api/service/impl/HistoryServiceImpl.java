@@ -69,6 +69,11 @@ public class HistoryServiceImpl implements HistoryService {
         return ResponseEntity.ok(new BaseResponseDto<>("success", result));
     }
 
+    @Override
+    public ResponseEntity<BaseResponseDto<List<History>>> getByUserId(Long userId) {
+        return ResponseEntity.ok(new BaseResponseDto<>("success", historyRepository.findByIdUser(userId)));
+    }
+
     private Device _getDeviceById(Long idDevice) {
         Optional<Device> device = deviceRepository.findById(idDevice);
         if (device.isEmpty()) {
