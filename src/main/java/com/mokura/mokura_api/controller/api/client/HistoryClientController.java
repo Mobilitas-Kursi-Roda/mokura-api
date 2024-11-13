@@ -1,6 +1,7 @@
 package com.mokura.mokura_api.controller.api.client;
 
 import com.mokura.mokura_api.dto.BaseResponseDto;
+import com.mokura.mokura_api.dto.ResGetHistoryClientDto;
 import com.mokura.mokura_api.entity.Device;
 import com.mokura.mokura_api.entity.History;
 import com.mokura.mokura_api.entity.User;
@@ -77,7 +78,7 @@ public class HistoryClientController {
     }
 
     @GetMapping()
-    public ResponseEntity<BaseResponseDto<List<History>>> getHistory(@RequestParam("id_user") Long idUser){
+    public ResponseEntity<BaseResponseDto<List<ResGetHistoryClientDto>>> getHistory(@RequestParam("id_user") Long idUser){
         return historyService.getByUserId(idUser);
     }
 }

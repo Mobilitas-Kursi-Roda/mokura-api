@@ -1,6 +1,7 @@
 package com.mokura.mokura_api.service.impl;
 
 import com.mokura.mokura_api.dto.BaseResponseDto;
+import com.mokura.mokura_api.dto.ResGetHistoryClientDto;
 import com.mokura.mokura_api.entity.Device;
 import com.mokura.mokura_api.entity.DeviceRecord;
 import com.mokura.mokura_api.entity.History;
@@ -13,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
@@ -70,9 +73,43 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public ResponseEntity<BaseResponseDto<List<History>>> getByUserId(Long userId) {
-        return ResponseEntity.ok(new BaseResponseDto<>("success", historyRepository.findByIdUser(userId)));
+    public ResponseEntity<BaseResponseDto<List<ResGetHistoryClientDto>>> getByUserId(Long userId) {
+        List<History> historyList = historyRepository.findByIdUser(userId);
+
+        DateTimeFormatter fullDateFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy HH:mm", Locale.forLanguageTag("id-ID"));
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.forLanguageTag("id-ID"));
+
+        List<ResGetHistoryClientDto> responseList = historyList.stream().map(history -> {
+            ResGetHistoryClientDto resGetHistoryClientDto = new ResGetHistoryClientDto();
+            resGetHistoryClientDto.setDevice_name(history.getDevice().getDevice_name());
+
+            // Format start_date
+            resGetHistoryClientDto.setStart_date(history.getStart_date().format(fullDateFormatter));
+
+            // Format end_date: cek apakah tanggal sama dengan start_date
+            if (history.getEnd_date().toLocalDate().equals(history.getStart_date().toLocalDate())) {
+                // Jika hari yang sama, gunakan format jam saja
+                resGetHistoryClientDto.setEnd_date(history.getEnd_date().format(timeFormatter));
+            } else {
+                // Jika berbeda, gunakan format lengkap
+                resGetHistoryClientDto.setEnd_date(history.getEnd_date().format(fullDateFormatter));
+            }
+
+            // Set duration dalam menit jika lebih dari atau sama dengan 60 detik
+            long durationInSeconds = history.getDuration();
+            if (durationInSeconds >= 60) {
+                long durationInMinutes = durationInSeconds / 60;
+                resGetHistoryClientDto.setDuration(durationInMinutes + " menit");
+            } else {
+                resGetHistoryClientDto.setDuration(durationInSeconds + " detik");
+            }
+
+            return resGetHistoryClientDto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(new BaseResponseDto<>("success", responseList));
     }
+
 
     private Device _getDeviceById(Long idDevice) {
         Optional<Device> device = deviceRepository.findById(idDevice);
