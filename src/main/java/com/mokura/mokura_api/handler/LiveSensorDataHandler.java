@@ -2,7 +2,9 @@ package com.mokura.mokura_api.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mokura.mokura_api.dto.ReqSendSensorDeviceWsDto;
+import com.mokura.mokura_api.entity.Device;
 import com.mokura.mokura_api.entity.DeviceRecord;
+import com.mokura.mokura_api.repository.DeviceRepository;
 import com.mokura.mokura_api.service.DeviceRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +14,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,6 +27,9 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
 
     @Autowired
     private DeviceRecordService deviceRecordService;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -56,7 +63,7 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         DeviceRecord deviceRecord = new DeviceRecord();
         deviceRecord.setUserId(sensorDto.getUser_id());
         deviceRecord.setDeviceId(sensorDto.getDevice_id());
-        deviceRecord.setCreated_at(LocalDateTime.parse(sensorDto.getCreated_at()));
+        deviceRecord.setCreated_at(LocalDateTime.now());
         deviceRecord.setBattery(sensorDto.getBattery());
         deviceRecord.setRpm(sensorDto.getRpm());
         deviceRecord.setSpeed(sensorDto.getSpeed());
@@ -66,6 +73,15 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         sendData.put(deviceRecord.getDeviceId().toString(), sensorDto);
 
         deviceRecordService.saveDeviceRecord(deviceRecord);
+
+        Optional<Device> device = deviceRepository.findById(deviceRecord.getDeviceId());
+        device.ifPresent(d -> {
+            d.setBattery(String.valueOf(sensorDto.getBattery()));
+            d.setLatitude(sensorDto.getLatitude());
+            d.setLongitude(sensorDto.getLongitude());
+            d.setLast_update(Instant.now());
+            deviceRepository.save(d);
+        });
 
         sendMessageToAdmin();
     }
