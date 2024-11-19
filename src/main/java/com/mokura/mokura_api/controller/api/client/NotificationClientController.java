@@ -77,9 +77,9 @@ public class NotificationClientController {
         emergencyNotif.setLatitude(lat);
         emergencyNotif.set_using_mokura(is_using_mokura);
         emergencyNotif.setDevice_id(device_id);
-        emergencyNotifRepository.save(emergencyNotif);
+        EmergencyNotif emergencySaved = emergencyNotifRepository.save(emergencyNotif);
         Optional<User> admin = userRepository.findByEmail("admin@mail.com");
-        admin.ifPresent(value -> notificationService.sendNotificationToUser(value, title, message, "notif id"));
+        admin.ifPresent(value -> notificationService.sendNotificationToUser(value, title, message, emergencySaved.getEmergency_notif_id().toString()));
         return ResponseEntity.ok(new BaseResponseDto<>("Success", null));
     }
 }

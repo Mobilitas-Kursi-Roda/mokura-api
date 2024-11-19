@@ -8,4 +8,5 @@ import java.util.List;
 public interface NotificationService {
     Boolean sendNotificationToUser(User user, String title, String body, String payload);
     List<ResGetNotifDto> getList();
+    ResGetNotifDto getDetail(Long emergencyNotificationId);
 }
