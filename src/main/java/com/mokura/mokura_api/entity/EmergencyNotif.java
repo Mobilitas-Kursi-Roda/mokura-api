@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.sql.Timestamp;
 
 @Data
 @Entity
@@ -26,4 +29,8 @@ public class EmergencyNotif {
     private String longitude;
     private String device_id;
     private boolean is_using_mokura = false;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Timestamp created_at;
 }
