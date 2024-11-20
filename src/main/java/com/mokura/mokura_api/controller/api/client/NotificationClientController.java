@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -71,15 +72,46 @@ public class NotificationClientController {
     ) {
         Optional<User> user = userRepository.findById(user_id);
         if (user.isEmpty()) throw new CustomBadRequestException("user_id not found");
+
         EmergencyNotif emergencyNotif = new EmergencyNotif();
         emergencyNotif.setUser(user.get());
         emergencyNotif.setLongitude(lng);
         emergencyNotif.setLatitude(lat);
         emergencyNotif.set_using_mokura(is_using_mokura);
         emergencyNotif.setDevice_id(device_id);
+
         EmergencyNotif emergencySaved = emergencyNotifRepository.save(emergencyNotif);
+
+        // Mengirim notifikasi ke admin
         Optional<User> admin = userRepository.findByEmail("admin@mail.com");
-        admin.ifPresent(value -> notificationService.sendNotificationToUser(value, title, message, emergencySaved.getEmergency_notif_id().toString()));
+        admin.ifPresent(value ->
+                notificationService.sendNotificationToUser(value, title, message, emergencySaved.getEmergency_notif_id().toString())
+        );
+
+        // Memanggil API eksternal
+        String callMeBotApiUrl = "http://api.callmebot.com/start.php";
+        String phoneNumber = "@satriadinata_r";
+        String apiText = "Mokura Emergency Call";
+        String apiLang = "en-GB-Standard-B";
+
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = String.format(
+                "%s?source=web&user=%s&text=%s&lang=%s",
+                callMeBotApiUrl,
+                phoneNumber,
+                apiText.replace(" ", "%20"), // Menghindari masalah dengan spasi di URL
+                apiLang
+        );
+
+        try {
+            var response = restTemplate.getForObject(apiUrl, String.class);
+            log.info(response);
+        } catch (Exception e) {
+            // Log error jika pemanggilan API gagal
+            log.error("Failed to call CallMeBot API: " + e.getMessage());
+        }
+
         return ResponseEntity.ok(new BaseResponseDto<>("Success", null));
     }
+
 }
