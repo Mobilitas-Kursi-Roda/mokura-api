@@ -63,11 +63,15 @@ public class HistoryServiceImpl implements HistoryService {
 
         List<DeviceRecord> deviceRecords = deviceRecordRepository.getAllByDeviceAndTimeBetween(
                 history.get().getDevice().getId_device(), history.get().getStart_date(), history.get().getEnd_date());
+        List<DeviceRecord> filteredDeviceRecords = deviceRecords.stream()
+                .filter(dr -> !dr.getLatitude().isEmpty() && !dr.getLongitude().isEmpty())
+                .sorted(Comparator.comparing(DeviceRecord::getCreated_at))
+                .toList();
 
         Map<Object, Object> result = new LinkedHashMap<>();
 
         result.put("history", history.get());
-        result.put("deviceRecords", deviceRecords);
+        result.put("deviceRecords", filteredDeviceRecords);
 
         return ResponseEntity.ok(new BaseResponseDto<>("success", result));
     }
