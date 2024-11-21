@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mokura.mokura_api.dto.ReqSendSensorDeviceWsDto;
 import com.mokura.mokura_api.entity.Device;
 import com.mokura.mokura_api.entity.DeviceRecord;
+import com.mokura.mokura_api.entity.User;
 import com.mokura.mokura_api.repository.DeviceRepository;
+import com.mokura.mokura_api.repository.UserRepository;
 import com.mokura.mokura_api.service.DeviceRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,9 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -69,6 +74,11 @@ public class LiveSensorDataHandler extends TextWebSocketHandler {
         deviceRecord.setSpeed(sensorDto.getSpeed());
         deviceRecord.setLatitude(sensorDto.getLatitude());
         deviceRecord.setLongitude(sensorDto.getLongitude());
+
+        Optional<User> user = userRepository.findById(sensorDto.getUser_id());
+        if (user.isPresent()) {
+            sensorDto.setUsername(user.get().getFull_name());
+        }
 
         sendData.put(deviceRecord.getDeviceId().toString(), sensorDto);
 

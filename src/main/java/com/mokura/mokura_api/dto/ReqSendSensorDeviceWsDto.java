@@ -21,4 +21,5 @@ public class ReqSendSensorDeviceWsDto {
     private String latitude;
     private String longitude;
     private String created_at;
+    private String username = null;
 }
