@@ -36,7 +36,7 @@ public class LoginControllerAdmin {
         user.setPassword("admin");
         if(!user.getUsername().equals(request.getUsername())  && !user.getPassword().equals(request.getPassword())){
             return ResponseEntity.badRequest().body(new BaseResponseDto<>(
-                    "login failed", null
+                    "login failed", "Username or Password Incorrect"
             ));
         }
         String token = jwtUtil.generateToken(user);
